@@ -1,0 +1,9 @@
+# 默认忽略的文件
+# .gitignore 内容
+.idea/
+__pycache__/
+*.pyc
+.DS_Store
+venv/
+env/
+*.iml
