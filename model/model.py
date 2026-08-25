@@ -1,8 +1,9 @@
 from transformers import PretrainedConfig
 
 
-class MokioMindConfig(PretrainedConfig):
-    model_type = "mokiomind"
+class MiniMindConfig(PretrainedConfig):
+    # 类属性，全局唯一标识，写入config.json
+    model_type = "minimind"
 
     def __init__(
         self,
@@ -70,3 +71,23 @@ class MokioMindConfig(PretrainedConfig):
             if self.inference_rope_scaling
             else None
         )
+
+import torch
+import torch.nn as nn
+
+# 创建RMSNorm类，继承自nn.Module类
+class RMSNorm(nn.Module):
+
+    # _init()初始化
+    def __init__(self,dim:int,eps:float=1e-5):
+        super().__init__()
+        self.eps=eps
+        self.weight=nn.Parameter(torch.ones(dim))
+
+    # _norm()归一化
+    def _norm(self,x:torch.Tensor)->torch.Tensor:
+        return torch.rsqrt(x.pow(2).mean(-1,keepdim=True).add(self.eps))*x
+
+    # forward()前向传播
+    def forward(self,x:torch.Tensor)->torch.Tensor:
+        return (self.weight*self._norm(x.float())).type_as(x)
